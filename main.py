@@ -38,7 +38,7 @@ FEATURES:
 """
 from Board_Class import Board,set_up_board
 from Bot_Class import Bot
-from Tile_Class import Tile,changeSpeed,Button,window_size,board_width
+from Tile_Class import Tile,changeSpeed,Button,window_size,board_width,tile_spacing
 from Vector_Class import V
 import math,time
 import pygame as pg
@@ -747,7 +747,7 @@ while True:
         if show_moves_on and not blocked:
             for move in B.legalMoves(): # For all legal moves, draw a circle highlighting the position
                 pos=(window_offset+(V(move)+(0.5,0.5))*sw).intify()
-                pg.gfxdraw.aaellipse(screen,*pos,int(sw*0.45),int(sw*0.45),(0,0,0))
+                pg.gfxdraw.aaellipse(screen,*pos,int(sw*(1-tile_spacing)/2),int(sw*(1-tile_spacing)/2),(0,0,0))
 
         for tile in tiles_to_remove: # These tiles are out of the main list but are still disappearing
             blocked=True # Animations are occurring

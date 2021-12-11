@@ -16,7 +16,7 @@ import pygame as pg
 from Vector_Class import V
 
 board_width=500
-tile_spacing=0.1
+tile_spacing=0.12
 pg.init()
 # window_size=V((800,650))
 window_size=V((800,650))

@@ -1,7 +1,7 @@
 """
 This is the Robot class. Robot objects hold information about their decision making strategies and the
 functions dictate the decision making process according to these paramters
- - Paramters include:
+ - Parameters include:
     () Preference to take Corners and Edges (score multiplier)
     () Patience for skipping repeatedly before eventually just making a move
     () Whether to actually think or just choose randomly
