@@ -9,7 +9,7 @@ black tile.
 RUNNING THE CODE:
  - Run Main to play.
  - At line 45 of this file:
-    () Debug activates the pre/post-conditions
+    () debug activates the pre/post-conditions in each file
     () reset_settings resets the game settings in the in-game "Settings" screen
 
 FEATURES:
