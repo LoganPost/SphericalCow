@@ -433,7 +433,7 @@ if True:
     show_moves_button.center(window_size/2+V((120,-200)))
     if show_moves_on:
         show_moves_button.changeColor(dark_button_color)
-        show_moves_button.changeText("Show Moves: OFF")
+        show_moves_button.changeText("Show Moves: ON")
 
     # The sliders are just buttons with text shifted down
     slider_size=(12,30)
