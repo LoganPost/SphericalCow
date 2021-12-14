@@ -214,8 +214,8 @@ def set_board_size(input): #This function sets up the board and a LOT of variabl
     board_image_shrunk=board_image_shrunks[i] # Get shrunk board image for title screen
     board_image_shrunk_rect=board_image_shrunk_rects[i]
     for button in board_size_buttons: # Change button color to reflect selection
-        button.changeColor(board_size_button_color)
-    board_size_buttons[i].changeColor(dark_board_size_button_color)
+        button.changeColor(light_button_color)
+    board_size_buttons[i].changeColor(dark_button_color)
     boardSize=input                 # Set or Update this variable
     sw = board_width / boardSize    # Set or Update (Square Width)
     B = set_up_board(boardSize)     # The Board!
@@ -296,25 +296,20 @@ def update_turn_text():
         else:
             turn_box.changeText("Black Turn",(0,0,0))
 
+# COLORS!
 othello_color = (220,220,220)
 light_button_color = (150, 150, 150)            # These are used for buttons in the settings page
-dark_button_color = (49,115,82)# (85, 130, 75)
-board_size_button_color = light_button_color#(117, 129, 107)       # These two colors indicate what board size is selected.
-dark_board_size_button_color = dark_button_color #(85, 110, 86)
-play_button_color=dark_button_color# (0,100,0)
-quit_button_color=dark_button_color# (0,100,0)
-skip_button_color=dark_button_color# (100,100,100)
-undo_button_color= dark_button_color# (150,100,100)
-# background_color=(34,34,34)
-background_color=(44,44,44)
+background_color=(44,44,44) #(34,34,34)
 play_text_color=(30,30,30)
-
-board_color = V(dark_button_color)# (61,143,102)
-# othello_color=(20,20,20)
-
+board_color = V((49,115,82))# (61,143,102)
+dark_button_color=board_color
 setting_label_color=(190,190,190)
 bubble_color=(90,90,90)             # Color of sliders
-slider_text_color = othello_color
+
+# Below are the settings in order, as imported from the data file.
+# Animation speed, difficulty (white player) level, True or False playing 0-player
+# black player level, undo enabled, skip enabled, show legal moves enabled?
+speed_l, diff_l, single_bot, double_bot, p2_l, undo_on, skip_on, show_moves_on = pickle.load(open("settings.dat", 'rb'))
 
 #Get the game started
 bots=getBots() #List of bots
@@ -326,16 +321,6 @@ pg.init()
 #                                       IMAGES AND SHAPES
 ########################################################################################################################
 if True:
-    # This uploads the files from inside the folder
-    # d_str=['Board_Images\\'+str(i*2+4)+'by'+str(i*2+4)+'Board512.png' for i in range(5)]
-    # board_images=[pg.image.load(d).convert() for d in d_str]
-    # board_image_rects=[image.get_rect() for image in board_images] #Get pg rectangles
-    # for tangle in board_image_rects:
-    #     tangle.center=window_offset+V((board_width,board_width))/2 # Place them in the middle of the window
-    # board_image_shrunks=[pg.transform.rotozoom(image,0,0.5) for image in board_images] #small image for title screen
-    # board_image_shrunk_rects=[shrunk.get_rect() for shrunk in board_image_shrunks] # Rectangle for title screen
-    # for tangle in board_image_shrunk_rects:
-    #     tangle.midtop=(window_size[0]/2,90) #Place them near the middle of the window
     board_images=[pg.Surface((board_width,board_width)) for i in range(5)]
     for i,im in enumerate(board_images):
         n=2*i+4
@@ -359,17 +344,9 @@ if True:
     for tangle in board_image_shrunk_rects:
         tangle.midtop = (window_size[0] / 2, 100)  # Place them near the middle of the window
 
-
-
-
-
     background=pg.Surface(window_size) #background surface
     background.fill((148,172,136))
     background.fill(background_color)
-    # Below are the settings in order:
-    # Animation speed, difficulty (white player) level, True or False playing 0-player
-    # black player level, undo enabled, skip enabled, show legal moves enabled?
-    speed_l,diff_l,single_bot,double_bot,p2_l,undo_on,skip_on,show_moves_on=pickle.load(open("settings.dat", 'rb'))
     changeSpeed(1.4 ** (speed_l - 5))   # Changes animation speed based on speed level
     line_length = 300                   # Length of settings slider line
     diff_h = 30                         # Height of difficulty slider
@@ -408,20 +385,20 @@ if True:
     black_prog, white_prog=(0,0)
 
     #Making buttons!
-    skip_button=Button((window_offset[0]-50,50),skip_button_color,"Skip",(20,20,20),skip_font)
+    skip_button=Button((window_offset[0]-50,50),dark_button_color,"Skip",(20,20,20),skip_font)
     skip_button.midleft((10, window_size[1] / 2))
-    undo_button=Button((window_offset[0]-50,50),undo_button_color,"Undo",(20,20,20),skip_font)
+    undo_button=Button((window_offset[0]-50,50),dark_button_color,"Undo",(20,20,20),skip_font)
     undo_button.midleft((10, window_size[1] / 2-70))
-    quit_button=Button((window_offset[0]-50,50),quit_button_color,'Quit',(20,20,20),skip_font)
+    quit_button=Button((window_offset[0]-50,50),dark_button_color,'Quit',(20,20,20),skip_font)
     quit_button.midleft((10,window_size[1]/2+70))
 
-    play_button=Button((250,70),play_button_color,"Play Game",play_text_color,play_font)
+    play_button=Button((250,70),dark_button_color,"Play Game",play_text_color,play_font)
     play_button.center((window_size/2+V((0,110))))
     settings_button=Button((210,60),light_button_color,"Settings",(20,20,20),settings_button_font)
     settings_button.center((window_size/2+V((0,210))))
 
     size_strings=["{} x {}".format(i*2+4,i*2+4) for i in range(len(board_images))]
-    board_size_buttons = [Button((100, 42),board_size_button_color,i,(40,40,40),board_size_font,thickness=1) for i in size_strings]
+    board_size_buttons = [Button((100, 42),light_button_color,i,(40,40,40),board_size_font,thickness=1) for i in size_strings]
     for i, button in enumerate(board_size_buttons):
         button.center((window_size[0] / 2 + 250, 110 + i * 65)) #Place them on the board
 
@@ -461,13 +438,13 @@ if True:
     # The sliders are just buttons with text shifted down
     slider_size=(12,30)
     slider_shift=V((0,27)) # This shifts the text down underneath the slider 25 pixels
-    diff_slider=Button(slider_size,bubble_color,str(diff_l),slider_text_color,scale_font,thickness=1)
+    diff_slider=Button(slider_size,bubble_color,str(diff_l),othello_color,scale_font,thickness=1)
     diff_slider.center((window_size/2+((diff_l-5)*line_length/10,diff_h)))
     diff_slider.shiftText(slider_shift)
-    p2_slider=Button(slider_size,bubble_color,str(p2_l),slider_text_color,scale_font,thickness=1)
+    p2_slider=Button(slider_size,bubble_color,str(p2_l),othello_color,scale_font,thickness=1)
     p2_slider.center((window_size/2+((p2_l-5)*line_length/10,p2_h)))
     p2_slider.shiftText(slider_shift)
-    speed_slider=Button(slider_size,bubble_color,str(round(1.4 ** (speed_l - 5),1)),slider_text_color,scale_font,thickness=1)
+    speed_slider=Button(slider_size,bubble_color,str(round(1.4 ** (speed_l - 5),1)),othello_color,scale_font,thickness=1)
     speed_slider.center((window_size/2+((speed_l-5)*line_length/10,speed_h)))
     speed_slider.shiftText(slider_shift)
     if speed_l>10: speed_slider.changeText("MAX") #In case the maximum speed is chosen
@@ -475,7 +452,7 @@ if True:
     # These are just plain text which we'll put on the screen
     # In game text:
     othello_box=TextBox("OTHELLO",othello_color,othello_font)
-    othello_box.midtop((window_size[0]/2,10))
+    othello_box.center((window_size[0]/2,40))
     turn_box=TextBox("Black Turn",(0,0,0),turn_font)
     turn_box.center((window_size[0]/2,95))
     white_score_box=TextBox("2",(255,255,255),turn_font)

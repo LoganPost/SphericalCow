@@ -9,6 +9,10 @@ These classes are useful for the creating visual effects.
     () Buttons have dimensions, location, color, text, font, text color, text location, border. This would
        otherwise require a bunch of different variables and assignments.
     () Also, it takes only one line of code display a button, which would otherwise take six
+
+ - TextBox class is like a button but without a rectangle or any clickable functionality.
+    () It doesn't do much, but it contains the text rendering surface and the location rectangle in one
+       more convenient place, rather than having a text_surf and text_rect object for everything I write
 """
 debug=False
 
@@ -139,7 +143,7 @@ class Button():
             assert isinstance(thickness,int)
         self.font=font                                      # Font of text
         self.thickness=thickness                            # Thickness of border
-        self.color=color                                    # Color of fill
+        self.color=V(color)                                    # Color of fill
         self.text_color=text_color                          # Color of text
         self.text=text                                      # Words to print
         self.rect=pg.Rect(0,0,*size)                        # Dimensions of button
@@ -149,7 +153,7 @@ class Button():
         if debug: # Postconditions: The rects should be in same place
             assert self.rect.topleft==self.text_rect.topleft
     def changeColor(self,color):
-        self.color=color    # Changes color lol
+        self.color=V(color)    # Changes color lol
     def changeText(self,text=None,color=None,font=None):    # Changes some properties about the text
         if debug: # Preconditions: Check for correct type. Not dealing with font
             if text!=None:
@@ -170,11 +174,14 @@ class Button():
         if debug: # Preconditions: Correct input types, text is right
             assert isinstance(clicking,bool)
             assert self.text_rect.center==self.rect.center+self.text_shift
-        pg.draw.rect(surf,self.color,self.rect,border_radius=rad)   # Draw background
-        surf.blit(self.text_surface,self.text_rect)                 # Write text
-        if clicking: # Draw the button border; make it thicker if the button is being pressed.
-            pg.draw.rect(surf, V(self.color)/3, self.rect, self.thickness*2,border_radius=rad)
+
+        if clicking: # Draw the button; make it different if the button is being pressed.
+            pg.draw.rect(surf, self.color*.9, self.rect, border_radius=rad)  # Draw bg, darker if being pressed
+            surf.blit(self.text_surface, self.text_rect)  # Write text
+            pg.draw.rect(surf, V(self.color)/3, self.rect, self.thickness*2,border_radius=rad) # Thicker border
         else:
+            pg.draw.rect(surf, self.color, self.rect, border_radius=rad)  # Draw background
+            surf.blit(self.text_surface, self.text_rect)  # Write text
             pg.draw.rect(surf, V(self.color)/3, self.rect, self.thickness,border_radius=rad)
     def midleft(self,loc): # Move button by setting the midleft point
         self.rect.midleft=loc   # Move rect
@@ -206,24 +213,20 @@ class TextBox():
         self.surf=font.render(text,True,color) # Rendering text onto surface
         self.rect=self.surf.get_rect()                      # Dimensions of textbox
         self.middle=self.rect.center
-    def center(self,pos):
+    def center(self,pos): #Sets the center of the textbox
         self.rect.center=pos
         self.middle = self.rect.center
-    def midtop(self,pos):
-        self.middle=pos
-        self.rect.midtop=pos
-        self.middle=self.rect.center
-    def changeText(self,text=None,color=None,font=None):
+    def changeText(self,text=None,color=None,font=None): #Changes some properties of the text
         if text!=None:
             self.text=text          # Change the words
         if color!=None:
             self.color=color   # Change color of the text
         if font!=None:
             self.font=font          # Change the font
-        self.surf=self.font.render(self.text,True,self.color)
-        self.rect=self.surf.get_rect()
-        self.center(self.middle)
-    def blit(self,screen):
+        self.surf=self.font.render(self.text,True,self.color) # Re render
+        self.rect=self.surf.get_rect()                          # re rect
+        self.center(self.middle)                                # Re center
+    def blit(self,screen): #Draws the textbox on the screen
         screen.blit(self.surf,self.rect)
 def changeSpeed(newSpeed): # Change the animation speed.
     if debug: #Can't have non-positive speed
