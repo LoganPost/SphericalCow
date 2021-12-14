@@ -38,7 +38,7 @@ FEATURES:
 """
 from Board_Class import Board,set_up_board
 from Bot_Class import Bot
-from Tile_Class import Tile,changeSpeed,Button,window_size,board_width,tile_spacing
+from Tile_Class import Tile,Button,TextBox,changeSpeed,window_size,board_width,tile_spacing
 from Vector_Class import V
 import math,time
 import pygame as pg
@@ -112,6 +112,7 @@ def nextTurn():
     else:
         # This allows players to skip even if skip is disabled.
         no_moves = not B.areLegalMoves()
+        update_turn_text()
     if debug: #Postconditions: the sum of tiles should add to the sum of scores
         assert B.countTiles()==sum(scores)
 def undo():
@@ -141,6 +142,7 @@ def undo():
         if players[turn] != "human": backup()
     updateScores()
     updateTileList(B)                       # Flip and remove necessary tiles
+    update_turn_text()
     no_moves = not B.areLegalMoves()        # Allows players to skip even if skip is disabled.
     if debug: #Postcondition: If the game was over, we restarted. We can't have less than 2 open spaces
         assert B.emptySpaces()>1
@@ -149,6 +151,7 @@ def gameOver():
     if debug: # Precondition: Nobody is able to play anymore.
         assert not (B.areLegalMoves() or B.inverted().areLegalMoves())
     game_over=True # Makes sense lol
+    update_turn_text()
 def getBots():
     # This just makes a list of bots to choose from later. Parameters defined in Bot_Class
     BabyBot= Bot(1, 1, depth=0, name="BabyBot")
@@ -219,9 +222,8 @@ def set_board_size(input): #This function sets up the board and a LOT of variabl
     tile_list = [[None for i in row] for row in B]  # Brand new tile list in the proper size
     memory = [B]                                    # Set or Reset memory
     updateTileList(B)                               # Places the first tiles
+    update_turn_text()
 def updateScores(): #This updates the progress bar and changes the score display surfaces
-    global white_score_text,white_score_text_rect
-    global black_score_text,black_score_text_rect
     if debug: # Precondition: The board must be made of numbers in [0,-1,1]
         for row in B:
             for i in row:
@@ -233,12 +235,8 @@ def updateScores(): #This updates the progress bar and changes the score display
     scores[1]=int((tileCount-blackAdv)/2)   # W
 
     # Render and place the scores:
-    white_score_text = turn_font.render(str(scores[1]), True, (255, 255, 255))
-    white_score_text_rect = white_score_text.get_rect()
-    white_score_text_rect.center = ((board_width + 3 * window_size[0]) / 4, 350)
-    black_score_text = turn_font.render(str(scores[0]), True, (0, 0, 0))
-    black_score_text_rect = black_score_text.get_rect()
-    black_score_text_rect.center = ((board_width + 3 * window_size[0]) / 4, 300)
+    white_score_box.changeText(str(scores[1]))
+    black_score_box.changeText(str(scores[0]))
     # Also update the progress bar. Reactivate the animation.
     global animating_prog_bar
     animating_prog_bar=True
@@ -284,6 +282,19 @@ def data_dump(): #This exports settings info to an external file
     if debug: #This information has hopefully been saved in the data file
         assert (speed_l,diff_l,single_bot,double_bot,p2_l,undo_on,skip_on,show_moves_on)==pickle.load(open("settings.dat", 'rb'))
     pass
+def update_turn_text():
+    if game_over: # If it's game over, check who won
+        if scores[1] > scores[0]:
+            turn_box.changeText("White Wins!", (210, 210, 210))
+        elif scores[1] < scores[0]:
+            turn_box.changeText("Black Wins!", (0, 0, 0))
+        else:
+            turn_box.changeText("Tie Game!", board_color)
+    else:
+        if turn==1: # If it's not game over, see whose turn it is
+            turn_box.changeText("White Turn",(210,210,210))
+        else:
+            turn_box.changeText("Black Turn",(0,0,0))
 
 othello_color = (220,220,220)
 light_button_color = (150, 150, 150)            # These are used for buttons in the settings page
@@ -399,16 +410,13 @@ if True:
     #Making buttons!
     skip_button=Button((window_offset[0]-50,50),skip_button_color,"Skip",(20,20,20),skip_font)
     skip_button.midleft((10, window_size[1] / 2))
-
     undo_button=Button((window_offset[0]-50,50),undo_button_color,"Undo",(20,20,20),skip_font)
     undo_button.midleft((10, window_size[1] / 2-70))
-
     quit_button=Button((window_offset[0]-50,50),quit_button_color,'Quit',(20,20,20),skip_font)
     quit_button.midleft((10,window_size[1]/2+70))
 
     play_button=Button((250,70),play_button_color,"Play Game",play_text_color,play_font)
     play_button.center((window_size/2+V((0,110))))
-
     settings_button=Button((210,60),light_button_color,"Settings",(20,20,20),settings_button_font)
     settings_button.center((window_size/2+V((0,210))))
 
@@ -433,22 +441,22 @@ if True:
     else:
         no_bot_button.changeColor(dark_button_color)
 
-    #Undo and Skip enabled buttons!
-    if undo_on:
-        undo_setting_button=Button((90,40),dark_button_color,"Undo: ON",(10,10,10),scale_font,thickness=1)
-    else:
-        undo_setting_button=Button((90,40),light_button_color,"Undo: OFF",(10,10,10),scale_font,thickness=1)
+    #Undo, Skip, and Show moves enabled buttons!
+    undo_setting_button = Button((90, 40), light_button_color, "Undo: OFF", (10, 10, 10), scale_font, thickness=1)
     undo_setting_button.center(window_size/2+V((-100,-200)))
-    if skip_on:
-        skip_setting_button = Button((90, 40), dark_button_color, "Skip: ON", (10, 10, 10), scale_font, thickness=1)
-    else:
-        skip_setting_button = Button((90, 40), light_button_color, "Skip: OFF", (10, 10, 10), scale_font, thickness=1)
+    if undo_on:
+        undo_setting_button.changeColor(dark_button_color)
+        undo_setting_button.changeText("Undo: ON")
+    skip_setting_button = Button((90, 40), light_button_color, "Skip: OFF", (10, 10, 10), scale_font, thickness=1)
     skip_setting_button.center(window_size/2+V((0,-200)))
-
-    show_moves_button = Button((130, 40), dark_button_color, "Show Moves: ON", (10, 10, 10), show_moves_font, thickness=1)
-    if not show_moves_on:
-        show_moves_button.changeText("Show Moves: OFF")
+    if skip_on:
+        skip_setting_button.changeColor(dark_button_color)
+        skip_setting_button.changeText("Skip: ON")
+    show_moves_button = Button((130, 40), light_button_color, "Show Moves: OFF", (10, 10, 10), show_moves_font, thickness=1)
     show_moves_button.center(window_size/2+V((120,-200)))
+    if show_moves_on:
+        show_moves_button.changeColor(dark_button_color)
+        show_moves_button.changeText("Show Moves: OFF")
 
     # The sliders are just buttons with text shifted down
     slider_size=(12,30)
@@ -456,11 +464,9 @@ if True:
     diff_slider=Button(slider_size,bubble_color,str(diff_l),slider_text_color,scale_font,thickness=1)
     diff_slider.center((window_size/2+((diff_l-5)*line_length/10,diff_h)))
     diff_slider.shiftText(slider_shift)
-
     p2_slider=Button(slider_size,bubble_color,str(p2_l),slider_text_color,scale_font,thickness=1)
     p2_slider.center((window_size/2+((p2_l-5)*line_length/10,p2_h)))
     p2_slider.shiftText(slider_shift)
-
     speed_slider=Button(slider_size,bubble_color,str(round(1.4 ** (speed_l - 5),1)),slider_text_color,scale_font,thickness=1)
     speed_slider.center((window_size/2+((speed_l-5)*line_length/10,speed_h)))
     speed_slider.shiftText(slider_shift)
@@ -468,56 +474,27 @@ if True:
 
     # These are just plain text which we'll put on the screen
     # In game text:
-    othello_text=othello_font.render('OTHELLO',True,othello_color)
-    othello_text_rect=othello_text.get_rect()
-    othello_text_rect.midtop=(window_size[0]/2,10)
-
-    turn_label_h=80
-    black_turn_text=turn_font.render('Black Turn',True,(0,0,0))
-    black_turn_text_rect=black_turn_text.get_rect()
-    black_turn_text_rect.midtop=(window_size[0]/2,turn_label_h)
-
-    white_turn_text=turn_font.render('White Turn',True,(210,210,210))
-    white_turn_text_rect=white_turn_text.get_rect()
-    white_turn_text_rect.midtop=(window_size[0]/2,turn_label_h)
-
+    othello_box=TextBox("OTHELLO",othello_color,othello_font)
+    othello_box.midtop((window_size[0]/2,10))
+    turn_box=TextBox("Black Turn",(0,0,0),turn_font)
+    turn_box.center((window_size[0]/2,95))
+    white_score_box=TextBox("2",(255,255,255),turn_font)
+    white_score_box.center(((board_width+3*window_size[0])/4,350))
+    black_score_box=TextBox("2",(0,0,0),turn_font)
+    black_score_box.center(((board_width+3*window_size[0])/4,300))
+    scores_box=TextBox("Scores:",othello_color,turn_font)
+    scores_box.center(((board_width+3*window_size[0])/4,250))
     game_over_button=Button((300,80),background_color+V((10,10,10)),"Game Over",(255,255,255),game_over_font,thickness=3)
     game_over_button.center(window_size/2)
-
-    black_wins_text=turn_font.render('Black Wins!',True,(0,0,0))
-    black_wins_text_rect=black_wins_text.get_rect()
-    black_wins_text_rect.midtop=(window_size[0]/2,turn_label_h)
-
-    white_wins_text=turn_font.render('White Wins!',True,(210,210,210))
-    white_wins_text_rect=white_wins_text.get_rect()
-    white_wins_text_rect.midtop=(window_size[0]/2,turn_label_h)
-
-    white_score_text= turn_font.render("2",True,(255,255,255))
-    white_score_text_rect=white_score_text.get_rect()
-    white_score_text_rect.center=((board_width+3*window_size[0])/4,350)
-    black_score_text= turn_font.render("2",True,(0,0,0))
-    black_score_text_rect=black_score_text.get_rect()
-    black_score_text_rect.center=((board_width+3*window_size[0])/4,300)
-    scores_text=turn_font.render("Scores:",True,othello_color)
-    scores_text_rect=scores_text.get_rect()
-    scores_text_rect.center=((board_width+3*window_size[0])/4,250)
-
     #Text in Settings
-    diff_label_text=settings_label_font.render("Difficulty",True,setting_label_color)
-    diff_label_text_rect=diff_label_text.get_rect()
-    diff_label_text_rect.center=(window_size/2+V((0,diff_h-35)))
-
-    p1_label_text = settings_label_font.render("White Bot", True, setting_label_color)
-    p1_label_text_rect = p1_label_text.get_rect()
-    p1_label_text_rect.center = (window_size / 2 + V((0, diff_h - 35)))
-
-    p2_label_text=settings_label_font.render("Black Bot",True,setting_label_color)
-    p2_label_text_rect=p2_label_text.get_rect()
-    p2_label_text_rect.center=(window_size/2+V((0,p2_h-35)))
-
-    speed_label_text=settings_label_font.render("Speed",True,setting_label_color)
-    speed_label_text_rect=speed_label_text.get_rect()
-    speed_label_text_rect.center=(window_size/2+V((0,speed_h-35)))
+    diff_label_box=TextBox("Difficulty",setting_label_color,settings_label_font)
+    diff_label_box.center((window_size/2+V((0,diff_h-35))))
+    p1_label_box=TextBox("White Bot",setting_label_color,settings_label_font)
+    p1_label_box.center((window_size / 2 + V((0, diff_h - 35))))
+    p2_label_box=TextBox("Black Bot",setting_label_color,settings_label_font)
+    p2_label_box.center((window_size/2+V((0,p2_h-35))))
+    speed_label_box=TextBox("Speed",setting_label_color,settings_label_font)
+    speed_label_box.center((window_size/2+V((0,speed_h-35))))
 ########################################################################################################################
 
 # Initialize Stuff
@@ -711,7 +688,7 @@ while True:
     ###########################################################################################################
     # No matter what, we always have the background and OTHELLO
     screen.blit(background, (0, 0))
-    screen.blit(othello_text, othello_text_rect)
+    othello_box.blit(screen)
     if game_active:
         quit_button.blit(screen,left_clicking=='quit') #Quit button, highlighted if selected
         if skip_on or no_moves: skip_button.blit(screen,left_clicking=='skip') # Skip if enabled
@@ -757,20 +734,12 @@ while True:
 
         #                                       DRAWING TEXT
         # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-        screen.blit(white_score_text,white_score_text_rect)     # Score writers
-        screen.blit(black_score_text,black_score_text_rect)
-        screen.blit(scores_text,scores_text_rect)
+        white_score_box.blit(screen)                                # Score writers
+        black_score_box.blit(screen)
+        scores_box.blit(screen)
+        turn_box.blit(screen)
         if game_over:
             game_over_button.blit(screen,left_clicking=="game over")
-            if   scores[0]>scores[1]:
-                screen.blit(black_wins_text, black_wins_text_rect) # Who won?
-            elif scores[0]<scores[1]:
-                screen.blit(white_wins_text, white_wins_text_rect)
-        else:
-            if turn==0:
-                screen.blit(black_turn_text, black_turn_text_rect) # Whose turn is it?
-            else:
-                screen.blit(white_turn_text, white_turn_text_rect)
         ######################################################################################################
         # JUST IN CASE, every 2 seconds or so, the tiles get fixed so they match the board.
         if counter==120:
@@ -789,7 +758,7 @@ while True:
             undo_setting_button.blit(screen,left_clicking=="undo setting")
             skip_setting_button.blit(screen,left_clicking=="skip setting")
             show_moves_button.blit(screen,left_clicking=="show moves setting")
-            screen.blit(speed_label_text,speed_label_text_rect)
+            speed_label_box.blit(screen)
             #Slider line for speed setting
             pg.draw.line(screen,(0,0,0),window_size/2+(-line_length/2,speed_h),window_size/2+(line_length/2,speed_h),2)
             if single_bot or double_bot:
@@ -804,10 +773,10 @@ while True:
                     new_center= min(max(x_pos,window_size[0]/2-line_length/2),window_size[0]/2+line_length/2)                                                                                   # TBD
                     diff_slider.centerx(new_center)         # Move the slider physically
             if single_bot:
-                screen.blit(diff_label_text,diff_label_text_rect)   # Write difficulty on the screen
+                diff_label_box.blit(screen)                         # Write difficulty on the screen
             if double_bot:
-                screen.blit(p1_label_text,p1_label_text_rect)       # Write white player on the screen
-                screen.blit(p2_label_text,p2_label_text_rect)       # Write black player on the screen
+                p1_label_box.blit(screen)                           # Write white player on the screen
+                p2_label_box.blit(screen)                           # Write black player on the screen
                 pg.draw.line(screen, (0, 0, 0), window_size / 2 + (-line_length / 2, p2_h),
                              window_size / 2 + (line_length / 2, p2_h), 2)  # Line for p2 slider
                 p2_slider.blit(screen,left_clicking=='p2')                  # Draw p2 Slider

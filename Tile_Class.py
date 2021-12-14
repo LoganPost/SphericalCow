@@ -198,6 +198,33 @@ class Button():
             assert isinstance(point,tuple) and len(point)==2
         return self.rect.collidepoint(point)
 
+class TextBox():
+    def __init__(self,text="",color=(0,0,0),font=pg.font.SysFont('calibri',20)):
+        self.font=font                                      # Font of text
+        self.color=color                                    # Color of text
+        self.text=text                                      # Words to print
+        self.surf=font.render(text,True,color) # Rendering text onto surface
+        self.rect=self.surf.get_rect()                      # Dimensions of textbox
+        self.middle=self.rect.center
+    def center(self,pos):
+        self.rect.center=pos
+        self.middle = self.rect.center
+    def midtop(self,pos):
+        self.middle=pos
+        self.rect.midtop=pos
+        self.middle=self.rect.center
+    def changeText(self,text=None,color=None,font=None):
+        if text!=None:
+            self.text=text          # Change the words
+        if color!=None:
+            self.color=color   # Change color of the text
+        if font!=None:
+            self.font=font          # Change the font
+        self.surf=self.font.render(self.text,True,self.color)
+        self.rect=self.surf.get_rect()
+        self.center(self.middle)
+    def blit(self,screen):
+        screen.blit(self.surf,self.rect)
 def changeSpeed(newSpeed): # Change the animation speed.
     if debug: #Can't have non-positive speed
         assert newSpeed>0
