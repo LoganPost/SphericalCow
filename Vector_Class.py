@@ -5,6 +5,7 @@
    I just think it is useful in general.
  - I don't have pre/post-conditions for this class; I see it more as adjacent to the final project
 """
+import math
 
 class V(tuple):
     def __add__(self,other): #Adds vectors pointwise
@@ -27,6 +28,8 @@ class V(tuple):
             return sum(self[i]/other[i] for i in range(len(self)))
     def pmul(self,other): # Pointwise multiplication
         return V(self[i]*other[i] for i in range(len(self)))
+    def cmul(self,other):
+        return V((self[0]*other[0]-self[1]*other[1],self[0]*other[1]+self[1]*other[0]))
     def cross(self,other): #Cross product
         if len(self)!=3: #Only length 3 vectors can take cross product
             return "This vector can't have cross product, it is length "+str(len(self))
@@ -46,3 +49,18 @@ class V(tuple):
         return self-other
     def intify(self): #Turns each element to an int
         return V((int(i) for i in self))
+    def conj(self):
+        return V((self[0],-self[1]))
+    def dist(self,other):
+        return abs(other-self)
+    def __imul__(self,other):
+        return self.pmul(other)
+    def normalize(self):
+        if abs(self)==0:
+            return self
+        return V((i/abs(self) for i in self))
+    def squarelen(self):
+        return sum([i**2 for i in self])
+    def rotated(self,degrees):
+        r=(math.cos(degrees),math.sin(degrees))
+        return self.cmul(r)

@@ -23,7 +23,7 @@ board_width=500
 tile_spacing=0.12
 pg.init()
 # window_size=V((800,650))
-window_size=V((800,650))
+window_size=V((800,600))
 board_dimension=V((board_width,board_width))
 window_shift=(window_size-board_dimension)/2
 # colors = [(33,33,33), (175,175,175)]
