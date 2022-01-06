@@ -341,6 +341,8 @@ while True:
     # othello_box.blit(screen)
     if game_active:
         pg.draw.rect(screen, (190, 90, 90), ((-3, -3), window_size + (6, 6)), 3, corner_radius)
+        pg.draw.rect(screen, (150, 70, 70), ((-5, -5), window_size + (10, 10)), 3, corner_radius+2)
+        pg.draw.rect(screen, (70, 40, 40), ((-7, -7), window_size + (14, 14)), 3, corner_radius + 4)
         quit_button.blit(screen,left_clicking=='quit') #Quit button, highlighted if selected
         if not game_over:
             # add_candy(player)
