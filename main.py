@@ -52,28 +52,6 @@ pg.init()
 #                                       IMAGES AND SHAPES
 ########################################################################################################################
 if True:
-    # board_images=[pg.Surface((board_width,board_width)) for i in range(5)]
-    # for i,im in enumerate(board_images):
-    #     n=2*i+4
-    #     im.fill(board_color)
-    #     for l in range(n+1):
-    #         pg.draw.line(im,(0,0,0),(l*(board_width-2)/n,0),(l*(board_width-2)/n,board_width),width=2)
-    #         pg.draw.line(im, (0, 0, 0), (0,l * (board_width-2) / n), (board_width,l * (board_width-2) / n), width=2)
-    # board_image_rects=[image.get_rect() for image in board_images]
-    # for tangle in board_image_rects:
-    #     tangle.center=window_offset+V((board_width,board_width))/2
-
-    # board_image_shrunks=[pg.Surface((board_width/2,board_width/2)) for i in range(5)]
-    # for i,im in enumerate(board_image_shrunks):
-    #     n=2*i+4
-    #     im.fill(board_color)
-    #     for l in range(n+1):
-    #         pg.draw.line(im,(0,0,0),(l*(board_width-1)/n/2,0),(l*(board_width-1)/n/2,board_width),width=1)
-    #         pg.draw.line(im,(0,0,0),(0,l*(board_width-1)/n/2),(board_width/2,l*(board_width-1)/n/2),width=1)
-    #
-    # board_image_shrunk_rects = [shrunk.get_rect() for shrunk in board_image_shrunks]  # Rectangle for title screen
-    # for tangle in board_image_shrunk_rects:
-    #     tangle.midtop = (window_size[0] / 2, 100)  # Place them near the middle of the window
 
     background=pg.Surface(window_size) #background surface
     background.fill((148,172,136))
@@ -83,13 +61,8 @@ if True:
     diff_h = 30                         # Height of difficulty slider
     p2_h=130                            # Height of white player slider
     speed_h = -120                      # Height of speed slider
-    # Set players below, whether double bot, single bot, or no bot
-    # if double_bot:
-    #     players=[bots[p2_l],bots[diff_l]]   # players=["human",bots[diff_l]]
-    # elif single_bot:
-    #     players = ['human', bots[diff_l]]
-    # else:
-    #     players = ['human',"human"]
+
+
 ########################################################################################################################
 #                                       BUTTONS AND TEXT
 ########################################################################################################################
@@ -120,11 +93,6 @@ if True:
     play_button.center((window_size/2+V((0,110))))
     settings_button=Button((210,60),light_button_color,"Settings",(20,20,20),settings_button_font)
     settings_button.center((window_size/2+V((0,210))))
-
-    # size_strings=["{} x {}".format(i*2+4,i*2+4) for i in range(len(board_images))]
-    # board_size_buttons = [Button((100, 42),light_button_color,i,(40,40,40),board_size_font,thickness=1) for i in size_strings]
-    # for i, button in enumerate(board_size_buttons):
-    #     button.center((window_size[0] / 2 + 250, 110 + i * 65)) #Place them on the board
 
     #These buttons are for the different play options
     bot_buttons_h=-55
@@ -173,43 +141,28 @@ if True:
     speed_slider.shiftText(slider_shift)
     if speed_l>10: speed_slider.changeText("MAX") #In case the maximum speed is chosen
 
-    # These are just plain text which we'll put on the screen
-    # In game text:
-    othello_box=TextBox("OTHELLO",othello_color,othello_font)
-    othello_box.center((window_size[0]/2,40))
-    turn_box=TextBox("Black Turn",(0,0,0),turn_font)
-    turn_box.center((window_size[0]/2,95))
-    white_score_box=TextBox("2",(255,255,255),turn_font)
-    white_score_box.center(((board_width+3*window_size[0])/4,350))
-    black_score_box=TextBox("2",(0,0,0),turn_font)
-    black_score_box.center(((board_width+3*window_size[0])/4,300))
-    scores_box=TextBox("Scores:",othello_color,turn_font)
-    scores_box.center(((board_width+3*window_size[0])/4,250))
-    game_over_button=Button((300,80),background_color+V((10,10,10)),"Game Over",(255,255,255),game_over_font,thickness=3)
-    game_over_button.center(window_size/2)
-    #Text in Settings
-    diff_label_box=TextBox("Difficulty",setting_label_color,settings_label_font)
-    diff_label_box.center((window_size/2+V((0,diff_h-35))))
-    p1_label_box=TextBox("White Bot",setting_label_color,settings_label_font)
-    p1_label_box.center((window_size / 2 + V((0, diff_h - 35))))
-    p2_label_box=TextBox("Black Bot",setting_label_color,settings_label_font)
-    p2_label_box.center((window_size/2+V((0,p2_h-35))))
-    speed_label_box=TextBox("Speed",setting_label_color,settings_label_font)
-    speed_label_box.center((window_size/2+V((0,speed_h-35))))
+
 ########################################################################################################################
+frog_image=pg.image.load("Images/Frog 120.gif").convert_alpha()
+chicken_image=pg.image.load("Images/Chicken 190.gif").convert_alpha()
+duck_image=pg.image.load("Images/Duck 170.gif").convert_alpha()
+sheep_image=pg.image.load("Images/Sheep 230.gif").convert_alpha()
+pig_image=pg.image.load("Images/Pig 210.gif").convert_alpha()
+cow_image=pg.image.load("Images/Sphyrical Cow 64 clone.gif").convert_alpha()
+farm_animals=[frog_image,chicken_image,duck_image,sheep_image,pig_image]
 
-
-newball=Ball((100,100),(1,0),1,20,(100,0,0))
-twoball=Ball((150,100),(0,1),4,40,color=(0,100,0))
+# newball=Ball((100,100),(1,0),1,20,(100,0,0))
+# twoball=Ball((150,100),(0,1),4,40,color=(0,100,0))
 balls=[]
 # balls.append(newball); balls.append(twoball)
 
-for i in range(20):
-    print(rand())
+title_text=TextBox("Assume a Spherical Cow...",(230,230,230),othello_font)
+title_text.center(window_size/2-(0,100))
+
 def randfrom(a,b):
     return a+rand()*(b-a)
 
-def generateBalls():
+def generateBalls_bad():
     balls=[]
     avsize = 30
     tamass = 1
@@ -227,7 +180,7 @@ def generateBalls():
         vel=((en/mass)**(1/2),0)
         # pos=(random()*500+200,random()*500+200)
         pos=(10*i,10*i)
-        balls.append(Ball(pos,vel,mass,avsize*mass**(1/2),(0,i*20,0)))
+        balls.append(Ball(pos,vel,mass,avsize*mass**(1/2),(0,i*20,0),frog_image))
     return balls
 
 def genBalls(num,siz,en,variance=0.5):
@@ -251,7 +204,7 @@ def genBalls(num,siz,en,variance=0.5):
         vel=V(((en*energy/mass)**(1/2),0))
         vel=vel.rotated(rand()*6.28)
         cval=200/num*i
-        balls.append(Ball(pos,vel,mass,size,(200-cval,cval,0)))
+        balls.append(Ball(pos,vel,mass,size,(200-cval,cval,0),farm_animals[i%5]))
     print("mass is {}".format(sum([i.mass for i in balls])))
     print("energy is {}".format(sum([i.kinetic_energy() for i in balls])))
     return balls
@@ -266,20 +219,20 @@ def add_candy(player):
     newpos = (5 + rand() * (window_size[0] - 10), 5 + rand() * (window_size[1] - 10))
     while player.pos.dist(newpos)<abs(window_size)/4:
         newpos = (5 + rand() * (window_size[0] - 10), 5 + rand() * (window_size[1] - 10))
-    candy.append(Ball(newpos,(0,0),1,5,(250,250,0),image=candy_image))
+    candy.append(Ball(newpos,(0,0),1,10,(250,250,0),image=candy_image))
 
 
 highscore=pickle.load(open('High_Score.dat','rb'))
 
 
 energy_monitor=TextBox("Kinetic Energy: {}".format(0),(250,250,250))
-energy_monitor.center((600,100))
+energy_monitor.center((700,30))
 score_monitor=TextBox("Score: {}".format(0),(250,250,250))
-score_monitor.center((600,130))
+score_monitor.center((700,60))
 candies_monitor=TextBox("Score: {}".format(0),(250,250,250))
-candies_monitor.center((600,160))
+candies_monitor.center((700,90))
 highscore_monitor=TextBox("High Score: {}".format(0),(250,250,250))
-highscore_monitor.center((600,190))
+highscore_monitor.center((700,120))
 
 # Initialize Stuff
 # set_board_size(8)       # Set board up
@@ -290,7 +243,7 @@ left_clicking=None      # Not clicking on anything
 game_over=True
 blocked=True
 counter=0               # Reset
-player=Player(pg.mouse.get_pos(),(0,0),1,10,(0,0,100))
+player=Player(pg.mouse.get_pos(),(0,0),1,12,(60,60,160),cow_image)
 player_speed=5
 game_speed=2
 candy=[]
@@ -347,7 +300,7 @@ while True:
                         highscore_monitor.changeText("High Score: {}".format(highscore))
                         pickle.dump(highscore,open("High_Score.dat","wb"))
                         while game_over:
-                            balls = genBalls(20, 30, 1, .3)
+                            balls = genBalls(20, 30, 1, .4)
                             game_over = is_game_over(balls,player)
                         game_active=True
                         add_candy(player)
@@ -358,9 +311,6 @@ while True:
     ###########################################################################################################
     # No matter what, we always have the background and OTHELLO
     screen.blit(background, (0, 0))
-    energy_monitor.blit(screen)
-    score_monitor.blit(screen)
-    candies_monitor.blit(screen)
     highscore_monitor.blit(screen)
     total_energy=sum([i.kinetic_energy() for i in balls])
     energy_monitor.changeText("Kinetic Energy: {}".format(round(total_energy,2)))
@@ -368,6 +318,9 @@ while True:
     candies_monitor.changeText("Candies: {}".format(candies))
     # othello_box.blit(screen)
     if game_active:
+        energy_monitor.blit(screen)
+        score_monitor.blit(screen)
+        candies_monitor.blit(screen)
         quit_button.blit(screen,left_clicking=='quit') #Quit button, highlighted if selected
         if not game_over:
             score+=int(total_energy)
@@ -417,34 +370,8 @@ while True:
         ######################################################################################################
         if settings_open:
             pass
-            # if left_clicking=='speed':
-            #     x_pos = pg.mouse.get_pos()[0]  # use mouse position to set speed
-            #     speed_l=max(round((x_pos-window_size[0]/2)*10/line_length+5),0)
-            #     if speed_l>10 and speed_l<11:  # Speed lvl 12 is the secret max lvl
-            #         speed_l=10
-            #     if speed_l>=11:
-            #         speed_l=11
-            #         changeSpeed(100000)                 # Max speed
-            #         speed_slider.changeText("MAX")
-            #         new_center = window_size[0]/2+line_length*0.6
-            #     else:
-            #         changingspeed = 1.4 ** (speed_l-5)  # Set speed and text
-            #         speed_slider.changeText(str(round(changingspeed,1)))
-            #         changeSpeed(changingspeed)          # Change tile animations
-            #         new_center = min(max(x_pos,window_size[0]/2-line_length/2),window_size[0]/2+line_length/2)
-            #     speed_slider.centerx(new_center)        # Move slider
-            # speed_slider.blit(screen,left_clicking=="speed") # Draw slider
         else:   # TITLE SCREEN
+            title_text.blit(screen)
             play_button.blit(screen,left_clicking=='play')          # Play button
-
-    # newball.blit(screen)
-    # twoball.blit(screen)
-    # newball.move(gamespeed)
-    # newball.walls(0,0,*(window_size/3))
-    # twoball.move(gamespeed)
-    # twoball.walls(0,0,*(window_size/3))
-    # if newball.check_ball_collision(twoball):
-    #     print('colliding')
-    #     newball.ball_collision(twoball,1)
     pg.display.update()
     clock.tick(60) # Limits to 60 fps
