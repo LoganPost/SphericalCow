@@ -86,7 +86,7 @@ if True:
     quit_button.midleft((10,window_size[1]/2+70))
 
     play_button=Button((250,70),dark_button_color,"Play Game",play_text_color,play_font)
-    play_button.center((window_size/2+V((0,110))))
+    play_button.center((window_size/2+V((0,210))))
     settings_button=Button((210,60),light_button_color,"Settings",(20,20,20),settings_button_font)
     settings_button.center((window_size/2+V((0,210))))
 
@@ -362,7 +362,8 @@ while True:
             energy_monitor.blit(screen)
             score_monitor.blit(screen)
     else:
-        settings_button.blit(screen,left_clicking in ('open_settings','close_settings'))
+        screen.blit(cow_image,window_size/2-(50,0))
+        # settings_button.blit(screen,left_clicking in ('open_settings','close_settings'))
         ######################################################################################################
         if settings_open:
             pass
