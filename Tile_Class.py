@@ -150,6 +150,7 @@ class Button():
         self.text_surface=font.render(text,True,text_color) # Rendering text onto surface
         self.text_rect=self.text_surface.get_rect()         # Used for centering text surface
         self.text_shift=V((0,0))                            # Used to shift text off center
+        self.pressed=False
         if debug: # Postconditions: The rects should be in same place
             assert self.rect.topleft==self.text_rect.topleft
     def changeColor(self,color):
@@ -175,7 +176,7 @@ class Button():
             assert isinstance(clicking,bool)
             assert self.text_rect.center==self.rect.center+self.text_shift
 
-        if clicking: # Draw the button; make it different if the button is being pressed.
+        if clicking or self.pressed: # Draw the button; make it different if the button is being pressed.
             pg.draw.rect(surf, self.color*.9, self.rect, border_radius=rad)  # Draw bg, darker if being pressed
             surf.blit(self.text_surface, self.text_rect)  # Write text
             pg.draw.rect(surf, V(self.color)/3, self.rect, self.thickness*2,border_radius=rad) # Thicker border

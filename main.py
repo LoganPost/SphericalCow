@@ -28,7 +28,7 @@ def data_dump(): #This exports settings info to an external file
 othello_color = (220,220,220)
 light_button_color = (150, 150, 150)            # These are used for buttons in the settings page
 background_color=(34,34,34)
-play_text_color=(30,30,30)
+play_text_color=(0,0,0)# (20,20,20)
 board_color = (115,49,82)# V((49,115,82))# (61,143,102)
 dark_button_color=board_color
 setting_label_color=(190,190,190)
@@ -82,7 +82,7 @@ if True:
     skip_button.midleft((10, window_size[1] / 2))
     undo_button=Button((window_offset[0]-50,50),dark_button_color,"Undo",(20,20,20),skip_font)
     undo_button.midleft((10, window_size[1] / 2-70))
-    quit_button=Button((window_offset[0]-50,50),dark_button_color,'Quit',(20,20,20),skip_font)
+    quit_button=Button((window_offset[0]-50,50),dark_button_color,'Quit',(0,0,0),skip_font)
     quit_button.midleft((10,window_size[1]/2+70))
 
     play_button=Button((250,70),dark_button_color,"Play Game",play_text_color,play_font)
@@ -281,13 +281,14 @@ while True:
             if event.type==pg.MOUSEBUTTONDOWN:
                 if event.button==1: #Leftclick down
                     if play_button.collidepoint(event.pos):
-                        left_clicking = 'play'          # Play button selected
+                        play_button.pressed=True
+                        # left_clicking = 'play'          # Play button selected
                     elif settings_button.collidepoint(event.pos):
                         left_clicking = 'open_settings' # Settings button selected
             # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
             elif event.type==pg.MOUSEBUTTONUP:
                 if event.button==1: #Leftclick up
-                    if left_clicking=='play' and play_button.collidepoint(event.pos):
+                    if play_button.pressed and play_button.collidepoint(event.pos):
                         player.goto(pg.mouse.get_pos())
                         highscore = max(score, highscore)
                         temp_speed=0
@@ -303,6 +304,7 @@ while True:
                         add_candy(player)
                         # game_over=False
                     left_clicking=None #upclick means nothing's clicked
+                    play_button.pressed=False
     ###########################################################################################################
     ###########################################################################################################
     # No matter what, we always have the background and OTHELLO
