@@ -9,6 +9,7 @@ import pickle
 from Ball_Class import Ball,Player
 from random import random as rand
 
+corner_radius=100
 debug = False
 reset_settings = False
 # This resets the settings
@@ -26,11 +27,11 @@ def data_dump(): #This exports settings info to an external file
 
 # COLORS!
 othello_color = (220,220,220)
-light_button_color = (150, 150, 150)            # These are used for buttons in the settings page
+light_button_color = (135,69,102)            # These are used for buttons in the settings page
 background_color=(34,34,34)
 play_text_color=(0,0,0)# (20,20,20)
 board_color = (115,49,82)# V((49,115,82))# (61,143,102)
-dark_button_color=board_color
+dark_button_color=light_button_color
 setting_label_color=(190,190,190)
 bubble_color=(90,90,90)             # Color of sliders
 
@@ -75,7 +76,6 @@ if True:
     settings_button_font=pg.font.SysFont('calibri',33,bold=False)
     play_font = pg.font.SysFont('calibri',40,bold=False)
     # settings_button_font #pg.font.SysFont('Helvetica', 50, bold=False)
-
 
     #Making buttons!
     skip_button=Button((window_offset[0]-50,50),dark_button_color,"Skip",(20,20,20),skip_font)
@@ -140,7 +140,7 @@ if True:
 
 ########################################################################################################################
 frog_image=pg.image.load("Images/Frog 120.gif").convert_alpha()
-chicken_image=pg.image.load("Images/Chicken 190.gif").convert_alpha()
+chicken_image=pg.image.load("Images/Chicken 200.gif").convert_alpha()
 duck_image=pg.image.load("Images/Duck 170.gif").convert_alpha()
 sheep_image=pg.image.load("Images/Sheep 230.gif").convert_alpha()
 pig_image=pg.image.load("Images/Pig 210.gif").convert_alpha()
@@ -211,9 +211,31 @@ def is_game_over(balls,player):
             return True
     return False
 candy_image=pg.image.load("images/Candy.gif").convert_alpha()
+def within_bounds(place):
+    place = V(place)
+    cr = corner_radius
+    if place[0] < cr and place[1] < cr:
+        if place.dist((cr, cr)) > cr:
+            return False
+    elif place[0] > window_size[0] - cr and place[1] < cr:
+        if place.dist((window_size[0] - cr, cr)) > cr:
+            return False
+    elif place[0] < cr and place[1] > window_size[1] - cr:
+        if place.dist((cr, window_size[1] - cr)) > cr:
+            return False
+    elif place[0] > window_size[0] - cr and place[1] > window_size[1] - cr:
+        if place.dist((window_size[0] - cr, window_size[1] - cr)) > cr:
+            return False
+    return True
+
 def add_candy(player):
     newpos = (5 + rand() * (window_size[0] - 10), 5 + rand() * (window_size[1] - 10))
-    while player.pos.dist(newpos)<abs(window_size)/4:
+    def is_legal(place):
+        if player.pos.dist(place) < abs(window_size) / 4:
+            return False
+        return within_bounds(place)
+
+    while not is_legal(newpos):
         newpos = (5 + rand() * (window_size[0] - 10), 5 + rand() * (window_size[1] - 10))
     candy.append(Ball(newpos,(0,0),1,10,(250,250,0),image=candy_image))
 
@@ -227,8 +249,9 @@ score_monitor=TextBox("Score: {}".format(0),(250,250,250))
 score_monitor.center((700,60))
 candies_monitor=TextBox("Score: {}".format(0),(250,250,250))
 candies_monitor.center((700,90))
-highscore_monitor=TextBox("High Score: {}".format(0),(250,250,250))
+highscore_monitor=TextBox("High Score: {}".format(int(highscore / 100) * 100),(250,250,250))
 highscore_monitor.center((700,120))
+
 
 # Initialize Stuff
 # set_board_size(8)       # Set board up
@@ -246,6 +269,7 @@ candy=[]
 energy_increment=0.01
 score=0
 candies=0
+mpos=(0,0)
 ########################################################################################################################
 #                                           MAIN LOOP
 ########################################################################################################################
@@ -264,7 +288,10 @@ while True:
                 if event.button==1:
                     if left_clicking=="quit" and quit_button.collidepoint(event.pos):
                         game_active=False
-
+                        candy=[]
+                        highscore = max(score, highscore)
+                        pickle.dump(highscore, open("High_Score.dat", "wb"))
+                        highscore_monitor.changeText("High Score: {}".format(int(highscore / 100) * 100))
                     left_clicking = None
 
         #####################################################################################
@@ -290,18 +317,16 @@ while True:
                 if event.button==1: #Leftclick up
                     if play_button.pressed and play_button.collidepoint(event.pos):
                         player.goto(pg.mouse.get_pos())
-                        highscore = max(score, highscore)
                         temp_speed=0
                         score=0
                         candies=0
-                        highscore_monitor.changeText("High Score: {}".format(highscore))
-                        pickle.dump(highscore,open("High_Score.dat","wb"))
                         while game_over:
                             balls = genBalls(20, 30, 1, .4)
                             game_over = is_game_over(balls,player)
                         game_active=True
                         add_candy(player)
                         add_candy(player)
+                        immunity=40
                         # game_over=False
                     left_clicking=None #upclick means nothing's clicked
                     play_button.pressed=False
@@ -309,19 +334,19 @@ while True:
     ###########################################################################################################
     # No matter what, we always have the background and OTHELLO
     screen.blit(background, (0, 0))
-    highscore_monitor.blit(screen)
+    pg.draw.rect(screen,(190,90,90),((-3,-3),window_size+(6,6)),3,corner_radius)
     total_energy=sum([i.kinetic_energy() for i in balls])
-    energy_monitor.changeText("Kinetic Energy: {}".format(round(total_energy,2)))
-    score_monitor.changeText("Score: {}".format(score))
+    energy_monitor.changeText("Kinetic Energy: {}".format(round(total_energy*5)/5))
+    score_monitor.changeText("Score: {}".format(int(score/100)*100))
     candies_monitor.changeText("Candies: {}".format(candies))
     # othello_box.blit(screen)
     if game_active:
-        energy_monitor.blit(screen)
-        score_monitor.blit(screen)
-        candies_monitor.blit(screen)
         quit_button.blit(screen,left_clicking=='quit') #Quit button, highlighted if selected
         if not game_over:
-            score+=int(total_energy)
+            # add_candy(player)
+            # add_candy(player)
+            # add_candy(player)
+            # add_candy(player)
             # print("total energy is ",sum([i.kinetic_energy() for i in balls]))
             for i, ball in enumerate(balls):
                 ball.walls(0, 0, *(window_size), 1)
@@ -329,21 +354,18 @@ while True:
                 for b in balls[i + 1:]:
                     if ball.check_ball_collision(b):
                         ball.ball_collision(b, 1)
-            game_over = is_game_over(balls, player)
-            # player.goto(pg.mouse.get_pos())
-            player.vel = (pg.mouse.get_pos() - player.pos).normalize() * min(player_speed,player.pos.dist(pg.mouse.get_pos())/game_speed)
-            if temp_speed==game_speed:
-                for ball in balls:
-                    ball.move(game_speed)
-                player.move(game_speed)
+            if within_bounds(pg.mouse.get_pos()):
+                mpos=pg.mouse.get_pos()
+            player.vel = (mpos - player.pos).normalize() * min(player_speed, player.pos.dist(mpos) / game_speed)
+            for ball in balls:
+                ball.move(game_speed)
+            player.move(game_speed)
+            if immunity:
+                immunity-=1
             else:
-                for ball in balls:
-                    ball.move(temp_speed)
-                player.move(temp_speed)
-                # print(temp_speed)
-                temp_speed+=.4       #Speed buildup rate
-                if temp_speed>=game_speed:
-                    temp_speed=game_speed
+                score += int(total_energy)
+                game_over = is_game_over(balls, player)
+            # player.goto(pg.mouse.get_pos())
             balls=sorted(balls,key=lambda y: y.kinetic_energy())
             e=balls[-1].kinetic_energy()
             balls[-1].vel=balls[-1].vel*((e+energy_increment)/e)**(1/2)
@@ -359,10 +381,15 @@ while True:
             ball.blit(screen)
         for c in candy:
             c.blit(screen)
+        if immunity:
+            pg.draw.ellipse(screen,(130,140,220),(player.pos-(player.rad+3,player.rad+3),(player.rad*2+7,player.rad*2+7)),2)
         player.blit(screen)
         if game_over:
             energy_monitor.blit(screen)
             score_monitor.blit(screen)
+        energy_monitor.blit(screen)
+        score_monitor.blit(screen)
+        candies_monitor.blit(screen)
     else:
         screen.blit(cow_image,window_size/2-(50,0))
         # settings_button.blit(screen,left_clicking in ('open_settings','close_settings'))
@@ -372,5 +399,6 @@ while True:
         else:   # TITLE SCREEN
             title_text.blit(screen)
             play_button.blit(screen,left_clicking=='play')          # Play button
+    highscore_monitor.blit(screen)
     pg.display.update()
     clock.tick(60) # Limits to 60 fps

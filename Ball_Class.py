@@ -14,7 +14,6 @@ class Ball():
         self.color=color
         self.image=image
         if image!=None:
-            print(self.rad)
             self.rect=image.get_rect()
             self.image=pg.transform.rotozoom(image,0,rad*4/(self.rect.width+self.rect.height))
             self.rect=self.image.get_rect()
