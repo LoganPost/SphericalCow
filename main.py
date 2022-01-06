@@ -334,13 +334,13 @@ while True:
     ###########################################################################################################
     # No matter what, we always have the background and OTHELLO
     screen.blit(background, (0, 0))
-    pg.draw.rect(screen,(190,90,90),((-3,-3),window_size+(6,6)),3,corner_radius)
     total_energy=sum([i.kinetic_energy() for i in balls])
     energy_monitor.changeText("Kinetic Energy: {}".format(round(total_energy*5)/5))
     score_monitor.changeText("Score: {}".format(int(score/100)*100))
     candies_monitor.changeText("Candies: {}".format(candies))
     # othello_box.blit(screen)
     if game_active:
+        pg.draw.rect(screen, (190, 90, 90), ((-3, -3), window_size + (6, 6)), 3, corner_radius)
         quit_button.blit(screen,left_clicking=='quit') #Quit button, highlighted if selected
         if not game_over:
             # add_candy(player)
