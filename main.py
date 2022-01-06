@@ -1,17 +1,13 @@
 """
 Welcome to Spherical Cow
 """
-from Board_Class import Board,set_up_board
-from Bot_Class import Bot
+
 from Tile_Class import Tile,Button,TextBox,changeSpeed,window_size,board_width,tile_spacing
 from Vector_Class import V
-import math,time
 import pygame as pg
-from pygame import gfxdraw
 import pickle
 from Ball_Class import Ball,Player
 from random import random as rand
-import random
 
 debug = False
 reset_settings = False
