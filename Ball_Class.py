@@ -1,6 +1,5 @@
 from Vector_Class import V
 import pygame as pg
-from random import random
 pg.init()
 from pygame import gfxdraw
 
